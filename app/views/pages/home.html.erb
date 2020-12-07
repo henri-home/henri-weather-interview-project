@@ -1,1 +1,82 @@
-home
+<h1 class="text-center">Damion Weather</h1>
+<% if @location %>
+   <table class="table">
+      <thead>
+      <tr>
+         <th scope="col">Location</th>
+         <th scope="col">High</th>
+         <th scope="col">Low</th>
+         <th scope="col">Average</th>
+         <th scope="col">F/C</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr>
+         <th scope="row" id="location"><%= @location.zipcode %></th>
+         <td id="high"><%= @forecast.high %></td>
+         <td id="low"><%= @forecast.low %></td>
+         <td id="average"><%= @forecast.daily_average_temperature.round(2) %></td>
+         <td>
+            <button class="btn btn-primary" id="toggle">Toggle</button>
+         </td>
+      </tr>
+      </tbody>
+   </table>
+<% end %>
+
+<h3>Locations</h3>
+<div id="locations">
+   <% @locations.each do |location| %>
+      <%= link_to location.zipcode, "?id=#{location.id}", class: "btn btn-#{ params[:id] == location.id.to_s ? 'success' : 'primary' }" %>
+   <% end %>
+</div>
+
+<%= form_with model: Location, class: "form-inline", id: "location-form" do |f| %>
+   <%= f.label 'Zipcode' %>
+   <%= f.text_field :zipcode, maxLength: 5, id: "zipcode-field" %>
+   <%= f.submit "Add Location", class: "btn btn-sm btn-success" %>
+<% end %>
+
+<script type="text/javascript" charset="utf-8">
+   $.ajaxSetup({
+      headers: {
+         'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      }
+   });
+   
+   $(document).ready(function () {
+      
+      $('#location-form').submit(function (event) {
+         event.preventDefault();
+         event.stopImmediatePropagation();
+         var formData = {
+            'zipcode': $('#zipcode-field').val()
+         };
+         $.ajax({
+            type: 'POST',
+            url: 'locations',
+            data: formData,
+            dataType: 'json',
+            encode: true
+         })
+            .done(function (data) {
+               console.log(data);
+               RefreshTable(data["id"]);
+               RefreshLocations();
+            });
+         
+      });
+      
+   });
+   
+   function RefreshTable(id) {
+      $(".table").load("/?id="+id+" .table");
+   }
+   
+   function RefreshLocations() {
+      $("#locations").load(window.location.href + " #locations");
+   }
+   
+   $("#refresh-btn").on("click", RefreshTable);
+
+</script>
