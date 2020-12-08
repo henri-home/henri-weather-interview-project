@@ -5,7 +5,7 @@ class LocationsController < ApplicationController
     if @location.save
       render json: {status: :created, id: @location.id}
     else
-      render json: @location.errors, status: :unprocessable_entity
+      render json: {error: "Zipcode " + @location.errors.messages[:zipcode].first, status: :unprocessable_entity}
     end
   end
 

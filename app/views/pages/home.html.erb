@@ -1,41 +1,46 @@
-<h1 class="text-center">Damion Weather</h1>
-<% if @location %>
-   <table class="table">
-      <thead>
-      <tr>
-         <th scope="col">Location</th>
-         <th scope="col">High</th>
-         <th scope="col">Low</th>
-         <th scope="col">Average</th>
-         <th scope="col">F/C</th>
-      </tr>
-      </thead>
-      <tbody>
-      <tr>
-         <th scope="row" id="location"><%= @location.zipcode %></th>
-         <td id="high"><%= @forecast.high %></td>
-         <td id="low"><%= @forecast.low %></td>
-         <td id="average"><%= @forecast.daily_average_temperature.round(2) %></td>
-         <td>
-            <button class="btn btn-primary" id="toggle">Toggle</button>
-         </td>
-      </tr>
-      </tbody>
-   </table>
+<h1 class="text-center">Damion Weather</h1></br>
+<div id="error" style="color:red;">&nbsp</div>
+<%= form_with url: get_forecast_path, id: 'forecast-form' do |form|  %>
+   <%= form.label :zipcode  %>
+   <%= form.text_field :zipcode, id: 'zipcode-field', maxlength: '5'  %>
+   <%= form.hidden_field :celsius, id: 'celsius-field', value: '0' %>
+   <%= link_to 'Fahrenheit', '', class: 'btn btn-sm btn-primary', id: 'celsius-toggle' %>
+   <%= form.submit 'Get Forecast', class: 'btn btn-sm btn-success', id: 'get-forecast' %>
+   
+   <%= link_to 'Save Location', '', class: 'btn btn-sm btn-primary', id: 'save-location' %>
+   
+   <%= link_to 'Refresh', '', class: 'btn btn-sm btn-primary', id: 'refresh' %>
 <% end %>
 
+<table class="table">
+   <thead>
+   <tr>
+      <th scope="col">Location</th>
+      <th scope="col">Current</th>
+      <th scope="col">High</th>
+      <th scope="col">Low</th>
+      <th scope="col">Average</th>
+   </tr>
+   </thead>
+   <tbody>
+   <tr>
+      <th scope="row" id="location"></th>
+      <td id="current"></td>
+      <td id="high"></td>
+      <td id="low"></td>
+      <td id="average"></td>
+   </tr>
+   </tbody>
+</table>
+
+</br>
 <h3>Locations</h3>
 <div id="locations">
    <% @locations.each do |location| %>
-      <%= link_to location.zipcode, "?id=#{location.id}", class: "btn btn-#{ params[:id] == location.id.to_s ? 'success' : 'primary' }" %>
+      <%= link_to location.zipcode, "", class: "btn btn-sm btn-primary location", data:{zipcode: location.zipcode} %>
    <% end %>
+   
 </div>
-
-<%= form_with model: Location, class: "form-inline", id: "location-form" do |f| %>
-   <%= f.label 'Zipcode' %>
-   <%= f.text_field :zipcode, maxLength: 5, id: "zipcode-field" %>
-   <%= f.submit "Add Location", class: "btn btn-sm btn-success" %>
-<% end %>
 
 <script type="text/javascript" charset="utf-8">
    $.ajaxSetup({
@@ -45,38 +50,115 @@
    });
    
    $(document).ready(function () {
-      
-      $('#location-form').submit(function (event) {
+   
+      $('#forecast-form').submit(function (event) {
          event.preventDefault();
          event.stopImmediatePropagation();
          var formData = {
-            'zipcode': $('#zipcode-field').val()
+            'zipcode': $('#zipcode-field').val(),
+            'celsius': $('#celsius-field').val()
          };
+         GetForecast(formData);
+      });
+   
+      $(document).on('click', '#refresh', function(event) {
+         event.preventDefault();
+         event.stopImmediatePropagation();
+         var formData = {
+            'zipcode': $('#zipcode-field').val(),
+            'celsius': $('#celsius-field').val()
+         };
+         GetForecast(formData);
+      });
+   
+      $(document).on('click', '.location', function(event) {
+         event.preventDefault();
+         event.stopImmediatePropagation();
+         var formData = {
+            'zipcode': this.dataset["zipcode"],
+            'celsius': $('#celsius-field').val()
+         };
+         $('#zipcode-field').val(formData['zipcode']);
+         GetForecast(formData);
+      });
+      
+         $('#save-location').click(function (event) {
+            event.preventDefault();
+            event.stopImmediatePropagation();
+            var formData = {
+               'zipcode': $('#zipcode-field').val()
+            };
+            $.ajax({
+               type: 'POST',
+               url: 'locations',
+               data: formData,
+               dataType: 'json',
+               encode: true
+            })
+               .done(function (data) {
+                  console.log(data);
+                  if (data["error"]) {
+                     $('#error').text(data["error"]);
+                  } else {
+                     $('#error').text('');
+                     RefreshLocations();
+                  }
+               });
+
+         });
+      
+      $('#celsius-toggle').click(function(event) {
+         event.preventDefault();
+         event.stopImmediatePropagation();
+         var celsius = $('#celsius-field');
+         // debugger
+         if(celsius.val() === '0'){
+            //currently F
+            $(this).text('Celsius');
+            celsius.val('1');
+         }
+         else {
+            //currently C
+            $(this).text('Fahrenheit');
+            celsius.val('0');
+         }
+      })
+         
+
+
+      });
+   
+      function RefreshTable(forecast) {
+         $('#location').text(forecast["zipcode"]);
+         $('#current').text(forecast["current_temp"]);
+         $('#high').text(forecast["high"]);
+         $('#low').text(forecast["low"]);
+         $('#average').text(forecast["average"]);
+      }
+   
+      function RefreshLocations() {
+         $("#locations").load(window.location.href + " #locations");
+      }
+      
+      function GetForecast(formData) {
          $.ajax({
             type: 'POST',
-            url: 'locations',
+            url: 'get_forecast',
             data: formData,
             dataType: 'json',
             encode: true
          })
             .done(function (data) {
                console.log(data);
-               RefreshTable(data["id"]);
-               RefreshLocations();
+               if (data["error"]) {
+                  $('#error').text(data["error"]);
+               } else {
+                  $('#error').text('');
+                  RefreshTable(data["forecast"]);
+               }
             });
-         
-      });
-      
-   });
+      }
    
-   function RefreshTable(id) {
-      $(".table").load("/?id="+id+" .table");
-   }
-   
-   function RefreshLocations() {
-      $("#locations").load(window.location.href + " #locations");
-   }
-   
-   $("#refresh-btn").on("click", RefreshTable);
+      $("#refresh-btn").on("click", RefreshTable);
 
 </script>
