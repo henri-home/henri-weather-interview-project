@@ -6,7 +6,7 @@ class ForecastsController < ApplicationController
     begin
 
       if params[:zipcode].blank?
-        raise 'Zipcode cannot be blank'
+        raise "Zipcode can't be blank"
       elsif /[^0-9]/.match(params[:zipcode])
         raise 'Zipcode can only contain digits 0-9'
       end

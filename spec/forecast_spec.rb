@@ -1,4 +1,4 @@
-require 'forecast.rb'
+require 'rails_helper'
 
 describe 'Forecast class' do
 

@@ -1,6 +1,4 @@
-require 'open_weather_map.rb'
-require 'httparty'
-require 'dotenv/load'
+require 'rails_helper'
 
 describe 'OpenWeatherMap class' do
 

@@ -1,9 +1,9 @@
 class LocationsController < ApplicationController
   def create
     @location = Location.new(zipcode: params[:zipcode])
-# debugger
+
     if @location.save
-      render json: {status: :created, id: @location.id}
+      render json: {status: :created}
     else
       render json: {error: "Zipcode " + @location.errors.messages[:zipcode].first, status: :unprocessable_entity}
     end
