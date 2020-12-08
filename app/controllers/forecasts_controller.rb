@@ -14,7 +14,7 @@ class ForecastsController < ApplicationController
       forecast = OpenWeatherMap.new.get_forecast_by_zipcode(params[:zipcode])
 
       forecast = forecast.to_celsius if params[:celsius] == '1'
-# debugger
+
       render json: {status: :ok, forecast: forecast}
     rescue StandardError => e
       render json: {error: e.message, status: :unprocessable_entity}

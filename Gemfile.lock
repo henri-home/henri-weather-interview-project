@@ -71,11 +71,11 @@ GEM
     coffee-script-source (1.12.2)
     concurrent-ruby (1.1.6)
     crass (1.0.6)
+    diff-lcs (1.4.4)
+    dotenv (2.7.6)
     erubi (1.9.0)
     execjs (2.7.0)
     ffi (1.12.2)
-    figaro (1.2.0)
-      thor (>= 0.14.0, < 2)
     globalid (0.4.2)
       activesupport (>= 4.2.0)
     httparty (0.17.1)
@@ -150,6 +150,19 @@ GEM
     rb-fsevent (0.10.3)
     rb-inotify (0.10.1)
       ffi (~> 1.0)
+    rspec (3.10.0)
+      rspec-core (~> 3.10.0)
+      rspec-expectations (~> 3.10.0)
+      rspec-mocks (~> 3.10.0)
+    rspec-core (3.10.0)
+      rspec-support (~> 3.10.0)
+    rspec-expectations (3.10.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-mocks (3.10.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.10.0)
+    rspec-support (3.10.0)
     ruby_dep (1.5.0)
     rubyzip (2.3.0)
     sass (3.7.4)
@@ -214,7 +227,7 @@ DEPENDENCIES
   byebug
   capybara (~> 2.13)
   coffee-rails (~> 4.2)
-  figaro
+  dotenv
   httparty
   jbuilder (~> 2.5)
   jquery-rails
@@ -223,6 +236,7 @@ DEPENDENCIES
   pg
   puma (~> 3.7)
   rails (~> 5.2.3)
+  rspec
   sass-rails (~> 5.0)
   selenium-webdriver
   spring

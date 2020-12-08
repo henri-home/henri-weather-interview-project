@@ -1,4 +1,4 @@
-<h1 class="text-center">Damion Weather</h1></br>
+<h1 class="text-center">Damion Weather</h1><br>
 <div id="error" style="color:red;">&nbsp</div>
 <%= form_with url: get_forecast_path, id: 'forecast-form' do |form|  %>
    <%= form.label :zipcode  %>
@@ -11,7 +11,7 @@
    
    <%= link_to 'Refresh', '', class: 'btn btn-sm btn-primary', id: 'refresh' %>
 <% end %>
-
+<br>
 <table class="table">
    <thead>
    <tr>
@@ -33,7 +33,7 @@
    </tbody>
 </table>
 
-</br>
+<br>
 <h3>Locations</h3>
 <div id="locations">
    <% @locations.each do |location| %>
