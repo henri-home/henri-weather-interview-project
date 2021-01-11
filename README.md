@@ -28,7 +28,7 @@ Build a Ruby on Rails app that calls an external weather service API and display
 
 * Include update weather link/button using JavaScript.
 
-* AJAX as much as possible
+* AJAX a few CRUD actions.
 
 * RSPEC tests for model and API methods used.
 
